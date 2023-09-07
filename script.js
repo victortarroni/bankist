@@ -45,6 +45,7 @@ document.addEventListener('keydown', function (e) {
 
 
 
+
 // Smooth scroll //
 
 document.querySelector('.nav__links').addEventListener('click', function(e) {
