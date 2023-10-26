@@ -84,7 +84,7 @@ tabsContainer.addEventListener('click', function(e){
 
 // menu faded animation // 
 
-const handleHover = function(e, opacity){
+const handleHover = function(e){
   if(e.target.classList.contains('nav__link')){
     
     const link = e.target;
@@ -92,6 +92,7 @@ const handleHover = function(e, opacity){
     const siblings = link.closest('.nav').querySelectorAll('.nav__link');
 
     const logo = link.closest('.nav').querySelector('img');
+
     siblings.forEach(el =>{
       if(el !== link) el.style.opacity = 0.5;
     });
@@ -100,7 +101,7 @@ const handleHover = function(e, opacity){
   }
 };
 
-nav.addEventListener('mouseover', handleHover.bind(0.5));
+nav.addEventListener('mouseover', handleHover);
 
 
 
