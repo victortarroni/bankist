@@ -1,7 +1,6 @@
 'use strict';
 
-///////////////////////////////////////
-// Modal window
+//#region My query selectors
 
 const modal = document.querySelector('.modal');
 const overlay = document.querySelector('.overlay');
@@ -9,33 +8,34 @@ const btnCloseModal = document.querySelector('.btn--close-modal');
 const btnsOpenModal = document.querySelectorAll('.btn--show-modal');
 const btnScrollto = document.querySelector('.btn--scroll-to');
 const section1 = document.querySelector('#section--1');
-// tried by myself //
 const menuButtons = document.querySelectorAll('.nav__item a')
 const nav = document.querySelector('.nav');
 const tabs = document.querySelectorAll('.operations__tab');
 const tabsContainer =  document.querySelector('.operations__tab-container');
 const tabsContent = document.querySelectorAll('.operations__content');
+const menu = document.querySelector('.nav__links');
+const allSections = document.querySelectorAll('.section');
+const imgTargets = document.querySelectorAll('img[data-src]');
 
+//#endregion
 
+//#region Modal window // 
 
-// Modal window // 
-
-const openModal = function (e) {
+const openModal = function(e) {
   e.preventDefault();
   modal.classList.remove('hidden');
   overlay.classList.remove('hidden');
 };
 
-const closeModal = function () {
+const closeModal = function() {
   modal.classList.add('hidden');
   overlay.classList.add('hidden');
 };
 
 for (let i = 0; i < btnsOpenModal.length; i++)
   btnsOpenModal[i].addEventListener('click', openModal);
-
-btnCloseModal.addEventListener('click', closeModal);
-overlay.addEventListener('click', closeModal);
+  btnCloseModal.addEventListener('click', closeModal);
+  overlay.addEventListener('click', closeModal);
 
 document.addEventListener('keydown', function (e) {
   if (e.key === 'Escape' && !modal.classList.contains('hidden')) {
@@ -43,93 +43,85 @@ document.addEventListener('keydown', function (e) {
   }
 });
 
+//#endregion
 
+//#region Smooth scroll //
 
+  menu.addEventListener('click', function(e) {
+    e.preventDefault();
 
-// Smooth scroll //
+    if(e.target.classList.contains('nav__link')){
+      const id = e.target.getAttribute('href');
+      console.log(id);
+      document.querySelector(id).scrollIntoView({behavior: 'smooth'})
+    }
 
-document.querySelector('.nav__links').addEventListener('click', function(e) {
-  e.preventDefault();
-
-  if(e.target.classList.contains('nav__link')){
-    const id = e.target.getAttribute('href');
-    console.log(id);
-    document.querySelector(id).scrollIntoView({behavior: 'smooth'})
-  }
 })
 
-// tabbed component // 
+//#endregion
+
+//#region tabbed component // 
 
 tabsContainer.addEventListener('click', function(e){
- 
   const clicked = e.target.closest('.operations__tab');
   console.log(clicked);
 
   if(!clicked) return;
-
-  // remove tab //
   tabs.forEach(t => t.classList.remove('operations__tab--active'));
 
   tabsContent.forEach(c => c.classList.remove('operations__content--active'));
 
-  // active tab //
   clicked.classList.add('operations__tab--active');
 
-  // active content area // 
   document.querySelector(`.operations__content--${clicked.dataset.tab}`).classList.add('operations__content--active');
-
 })
 
+//#endregion
 
-
-// menu faded animation // 
+//#region menu faded animation // 
 
 const handleHover = function(e){
   if(e.target.classList.contains('nav__link')){
     
     const link = e.target;
-
     const siblings = link.closest('.nav').querySelectorAll('.nav__link');
-
     const logo = link.closest('.nav').querySelector('img');
 
     siblings.forEach(el =>{
       if(el !== link) el.style.opacity = 0.5;
     });
-
     logo.style.opacity = 0.5;
   }
 };
 
-nav.addEventListener('mouseover', handleHover);
-
-
-
-nav.addEventListener('mouseout', function (e){
+const offHover = function (e){
   if(e.target.classList.contains('nav__link')){
+
     const link = e.target;
-    
     const siblings = link.closest('.nav').querySelectorAll('.nav__link');
-    
     const logo = link.closest('.nav').querySelector('img');
 
     siblings.forEach(el =>{
       if(el !== link) el.style.opacity = 1;
     });
-    logo.style.opacity = 1;
-    
+    logo.style.opacity = 1; 
   }
-})
+};
 
+nav.addEventListener('mouseout', offHover);
 
-// sticky navigation : Intersection observer //
+nav.addEventListener('mouseover', handleHover);
+
+//#endregion
+
+//#region sticky navigation : Intersection observer //
 
 const header = document.querySelector('.header');
 const navHeight = nav.getBoundingClientRect().height;
 
 const stickyNav = function(entries){
   const [entry] = entries;
-  console.log(entry);
+
   if(!entry.isIntersecting) nav.classList.add('sticky'); 
   else nav.classList.remove('sticky');
 }
@@ -143,17 +135,15 @@ const headerObserver = new IntersectionObserver(stickyNav, {
 
 headerObserver.observe(header);
 
+//#endregion
 
-
-// scroll effect, that reveals each section as it approaches //
-
-const allSections = document.querySelectorAll('.section');
+//#region scroll effect, that reveals each section //
 
 const revealSection = function(entries, observer){
   const [entry] = entries;
   console.log('revealSection', entry);
+
   if(!entry.isIntersecting) return;
-  // ele fez isso para que a primeira sessao tambem tivesse efeito//
   entry.target.classList.remove('section--hidden');
   observer.unobserve(entry.target);
 }
@@ -163,17 +153,14 @@ const sectionObserver = new IntersectionObserver ( revealSection, {
   threshold: 0.15,
 });
 
-
-
 allSections.forEach(function(section){
   sectionObserver.observe(section);
   section.classList.add('section--hidden');
 });
 
-// lazy loading the images // 
+//#endregion
 
-const imgTargets = document.querySelectorAll('img[data-src]');
-// we need to select the high qualituy image//
+//#region lazy loading the images // 
 
 const loadImg = function(entries, observer){
   const [entry] = entries;
@@ -184,7 +171,6 @@ const loadImg = function(entries, observer){
   entry.target.src = entry.target.dataset.src;
 
   entry.target.addEventListener('load', function(){
-  
     entry.target.classList.remove('lazy-img');
   });
 
@@ -196,14 +182,16 @@ const imgObserver = new IntersectionObserver(loadImg, {
   root: null,
   threshold:0,
   rootMargin: '200px',
-  // we did this so the image might load a little bit eariler compared against when it will cross the display//
+  // I did this so the image might load a little bit earlier compared against when it will cross the display//
 });
 
 imgTargets.forEach(img => imgObserver.observe(img));
- 
-///////////////////////////////////////
-// Slider
-const slider = function () {
+
+//#endregion
+
+//#region Sliders - carousel
+
+const slider = function() {
   const slides = document.querySelectorAll('.slide');
   const btnLeft = document.querySelector('.slider__btn--left');
   const btnRight = document.querySelector('.slider__btn--right');
@@ -213,16 +201,18 @@ const slider = function () {
   const maxSlide = slides.length;
 
   // Functions
-  const createDots = function () {
+  const createDots = function() {
+
     slides.forEach(function (_, i) {
       dotContainer.insertAdjacentHTML(
         'beforeend',
         `<button class="dots__dot" data-slide="${i}"></button>`
       );
     });
+
   };
 
-  const activateDot = function (slide) {
+  const activateDot = function(slide) {
     document
       .querySelectorAll('.dots__dot')
       .forEach(dot => dot.classList.remove('dots__dot--active'));
@@ -230,16 +220,18 @@ const slider = function () {
     document
       .querySelector(`.dots__dot[data-slide="${slide}"]`)
       .classList.add('dots__dot--active');
+
   };
 
-  const goToSlide = function (slide) {
+  const goToSlide = function(slide) {
     slides.forEach(
       (s, i) => (s.style.transform = `translateX(${100 * (i - slide)}%)`)
     );
   };
 
   // Next slide
-  const nextSlide = function () {
+  const nextSlide = function() {
+
     if (curSlide === maxSlide - 1) {
       curSlide = 0;
     } else {
@@ -250,7 +242,8 @@ const slider = function () {
     activateDot(curSlide);
   };
 
-  const prevSlide = function () {
+  const prevSlide = function() {
+
     if (curSlide === 0) {
       curSlide = maxSlide - 1;
     } else {
@@ -258,14 +251,15 @@ const slider = function () {
     }
     goToSlide(curSlide);
     activateDot(curSlide);
+
   };
 
-  const init = function () {
+  const init = function() {
     goToSlide(0);
     createDots();
-
     activateDot(0);
   };
+
   init();
   
   // Event handlers
@@ -286,3 +280,5 @@ const slider = function () {
   });
 };
 slider();
+
+//#endregion
