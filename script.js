@@ -22,7 +22,7 @@ const imgTargets = document.querySelectorAll('img[data-src]');
 //#region Modal window // 
 
 const openModal = function(e) {
-  e.preventDefault();
+  // e.preventDefault();
   modal.classList.remove('hidden');
   overlay.classList.remove('hidden');
 };
@@ -191,16 +191,17 @@ imgTargets.forEach(img => imgObserver.observe(img));
 
 //#region Sliders - carousel
 
-const slider = function() {
+const slider = function() { // manager the slider navigation
   const slides = document.querySelectorAll('.slide');
   const btnLeft = document.querySelector('.slider__btn--left');
   const btnRight = document.querySelector('.slider__btn--right');
   const dotContainer = document.querySelector('.dots');
 
-  let curSlide = 0;
-  const maxSlide = slides.length;
+  let curSlide = 0; // Keeps track of the current slide (initially set to 0).
+  const maxSlide = slides.length; // Stores the total number of slides.
 
-  // Functions
+  // Functions // Creates and adds navigation dots to the dotContainer.
+  // Iterates over each slide, creating a button
   const createDots = function() {
 
     slides.forEach(function (_, i) {
@@ -212,49 +213,54 @@ const slider = function() {
 
   };
 
+  // activeDot - To update the active navigation dot based on the currently visible slide.
   const activateDot = function(slide) {
     document
       .querySelectorAll('.dots__dot')
-      .forEach(dot => dot.classList.remove('dots__dot--active'));
+      .forEach(dot => dot.classList.remove('dots__dot--active')); // o	Iterates over each dot and removes the class dots__dot--active from all of them.
 
-    document
-      .querySelector(`.dots__dot[data-slide="${slide}"]`)
+    document // o	Selects the dot that corresponds to the current slide and adds the class dots__dot--active to this specific dot
+      .querySelector(`.dots__dot[data-slide="${slide}"]`) 
       .classList.add('dots__dot--active');
 
   };
-
+  
+  // To update the position of each slide to show the desired slide in the slider.
   const goToSlide = function(slide) {
     slides.forEach(
-      (s, i) => (s.style.transform = `translateX(${100 * (i - slide)}%)`)
+      (s, i) => (s.style.transform = `translateX(${100 * (i - slide)}%)`) // o	The translateX value shifts each slide horizontally based on its index relative to the target slide.
     );
   };
 
   // Next slide
+  //To move to the next slide in the slider and update the navigation dots accordingly.
+  //
   const nextSlide = function() {
 
-    if (curSlide === maxSlide - 1) {
+    if (curSlide === maxSlide - 1) { // If curSlide is at the last slide (maxSlide - 1), reset curSlide to 0 (loop back to the first slide).
       curSlide = 0;
     } else {
-      curSlide++;
+      curSlide++; // If not at the last slide, increment curSlide by 1 to move to the next slide.
     }
 
-    goToSlide(curSlide);
+    goToSlide(curSlide); // Calls goToSlide(curSlide) to move the slides so that the newly updated curSlide is displayed.
     activateDot(curSlide);
-  };
+  }; // activateDot(curSlide) to highlight the dot corresponding to the new curSlide.
 
-  const prevSlide = function() {
+
+  const prevSlide = function() { // To move to the previous slide in the slider and update the navigation dots accordingly.
 
     if (curSlide === 0) {
-      curSlide = maxSlide - 1;
+      curSlide = maxSlide - 1; //  If curSlide is at the first slide (index 0), set curSlide to the last slide (maxSlide - 1) to loop back.
     } else {
-      curSlide--;
+      curSlide--; // f not at the first slide, decrement curSlide by 1 to move to the previous slide.
     }
-    goToSlide(curSlide);
-    activateDot(curSlide);
+    goToSlide(curSlide); // to adjust the slides so that the updated curSlide is displayed.
+    activateDot(curSlide); // activateDot(curSlide) to highlight the dot corresponding to the new curSlide.
 
   };
 
-  const init = function() {
+  const init = function() { // Highlights the navigation dot that corresponds to the currently displayed slide.
     goToSlide(0);
     createDots();
     activateDot(0);
@@ -266,12 +272,12 @@ const slider = function() {
   btnRight.addEventListener('click', nextSlide);
   btnLeft.addEventListener('click', prevSlide);
 
-  document.addEventListener('keydown', function (e) {
+  document.addEventListener('keydown', function (e) { // set this function to move the slides with the keybord arrows
     if (e.key === 'ArrowLeft') prevSlide();
     e.key === 'ArrowRight' && nextSlide();
   });
 
-  dotContainer.addEventListener('click', function (e) {
+  dotContainer.addEventListener('click', function (e) { // This code listens for clicks on the navigation dots, determines which dot was clicked, and updates the slider and dots accordingly.
     if (e.target.classList.contains('dots__dot')) {
       const { slide } = e.target.dataset;
       goToSlide(slide);
